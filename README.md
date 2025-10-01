@@ -4,6 +4,7 @@ Pipedream is an extremely hackable text-based compression game where the core go
 
 ![demonstration](results/3-easy.png "3 state easy state")
 
+
 ## Game Concept : 
 
 The initial state of the game is a 'leaky roof' - a single array that looks like : ["1,1,1,0,0,1,1,0,1"]. The 1s are the holes, each of which is dripping water down to the ground, one drop for every step of the game. In this case there are six 1s, so six holes strewn around the roof, so at this state, 6 drops of water are getting lost at every step of the game. 
@@ -33,6 +34,8 @@ uv run game.py --state "1,1,1,0,0,1,1,0,1" --bucket 3
 
 The `--state` argument takes a comma-separated string of 1s and 0s representing the initial state of the roof.
 The `--bucket` argument specifies which position should be treated as the hole (0-based index).
+
+(P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
 
 
 Basic controls : 
@@ -165,7 +168,7 @@ The solver handles changing initial states during search (dfs_solver.py:278-341)
 • Continues search from the new state
 
 
-(P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
+
 
 ### LICENSE
 
