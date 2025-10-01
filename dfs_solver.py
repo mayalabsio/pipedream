@@ -16,87 +16,12 @@ from itertools import product
 from copy import deepcopy
 from game import print_all_layers, print_state
 import time
-import matplotlib.pyplot as plt
 import threading
 
 MAX_DEPTH = 10
 
 
 # After solving, you can plot the losses:
-def plot_solver_losses(solver, first_state=None):
-    print("Plotting solver losses")
-    print(len(solver.loss_history))
-    # Modified to handle both regular losses and state change markers
-    regular_losses = []
-    state_changes = []
-    states = (
-        [first_state] if first_state else [solver.original_initial_state]
-    )  # Start with initial state
-
-    for i, loss_entry in enumerate(solver.loss_history):
-        if isinstance(loss_entry, tuple):
-            if len(loss_entry) == 2:
-                # Regular loss entry (total_loss, current_loss)
-                total_loss, current_loss = loss_entry
-                regular_losses.append((i, total_loss, current_loss))
-            elif len(loss_entry) == 4:
-                # State change marker (call_number, total_loss, current_loss)
-                call_number = loss_entry[0]
-                state_changes.append(call_number)
-                # Add the new state when we detect a state change
-                current_state = loss_entry[3]
-                states.append(current_state)
-
-    print(f"State changes detected at: {state_changes}")
-    print(f"States: {states}")
-
-    if regular_losses:
-        calls, total_losses, current_losses = zip(*regular_losses)
-
-        plt.figure(figsize=(12, 6))
-
-        # Create segments between state changes
-        segments = []
-        change_points = [0] + state_changes + [max(calls) + 1]
-
-        # Create segments between consecutive change points
-        for i in range(len(change_points) - 1):
-            start_val = change_points[i]
-            end_val = change_points[i + 1]
-
-            segment = [
-                (x, y)
-                for x, y in zip(calls, current_losses)
-                if start_val <= x < end_val
-            ]
-            if segment:
-                segments.append(segment)
-
-        # Plot each segment with a different color
-        for i, segment in enumerate(segments):
-            x, y = zip(*segment)
-            state_str = str(states[i]) if i < len(states) else "Unknown"
-            label = f"Current Loss (State {i + 1}: {state_str})"
-            color = plt.cm.viridis(i / max(1, len(segments)))
-            plt.plot(x, y, label=label, color=color, marker=".")
-
-        # Mark state changes with vertical lines
-        for i, call_num in enumerate(state_changes):
-            plt.axvline(
-                x=call_num,
-                color="r",
-                linestyle="--",
-                alpha=0.5,
-                label="State Change" if i == 0 else None,
-            )  # Only label first line
-
-        plt.xlabel("Number of Solver Calls")
-        plt.ylabel("Loss")
-        plt.title("Loss Progression During Solving")
-        plt.ylim((0, 10))
-        plt.legend(loc="upper right")  # Changed to place legend inside at top right
-        plt.grid(True)
-        plt.show()
 
 
 def find_possible_groups(
@@ -602,9 +527,8 @@ if __name__ == "__main__":
         initial_states_and_times=state_changes, hole_idx=hole_idx, max_calls=500
     )
     # plot_solver_losses(solver, first_state=state_changes[0][0])
-    from ascii_plot_solver_losses import plot_solver_losses_ascii
+    from plotter import plot_solver_losses_ascii
 
     plot_solver_losses_ascii(
         solver, first_state=state_changes[0][0], width=250, height=35
     )
-
