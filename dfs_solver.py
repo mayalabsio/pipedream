@@ -579,7 +579,7 @@ if __name__ == "__main__":
             hole_idx=hole_idx,
             max_calls=500,
             desired_loss=desired_loss,
-        )
+
         # plot_solver_losses(solver, first_state=state_changes[0][0])
         from plotter import plot_solver_losses_ascii
 

@@ -1,9 +1,10 @@
-# Compression Game
+# Pipedream : Compression Game
 
 Pipedream is an extremely hackable text-based compression game where the core goal is write an automated solver script that can solve arbitrary levels of the game in the fewest number of steps.
 
+![demonstration](results/3-easy.png "3 state easy state")
 
-## Game Rules : 
+## Game Concept : 
 
 The initial state of the game is a 'leaky roof' - a single array that looks like : ["1,1,1,0,0,1,1,0,1"]. The 1s are the holes, each of which is dripping water down to the ground, one drop for every step of the game. In this case there are six 1s, so six holes strewn around the roof, so at this state, 6 drops of water are getting lost at every step of the game. 
 
@@ -26,9 +27,7 @@ uv run game.py
 or initialize the game state like this to play it:
 
 ```
-```
 uv run game.py --state "1,1,1,0,0,1,1,0,1" --bucket 3
-```
 ```
 
 
@@ -44,8 +43,7 @@ Basic controls :
    - Clamp groups (once you've seen the same group pattern twice)
    - Move clamps into adjacent holes
 3. The goal is to minimize the number of non-zero elements (excluding the hole position) i.e. build up the one single higher-order pipe 
-```
-```
+
 
 ## Gameplay
 
@@ -60,39 +58,70 @@ Games are automatically saved to timestamped directories under `gameplays/` for 
 
 Replay a previously saved game:
 
-```bash
+```
 uv run game.py --replay gameplays/game_20250204_184018
-
+```
 
 Playing manually gets slow and tedious quickly, so the ideal way to play is to write a solver for the game. 
 
-A basic solver that does depth-first search is given as a demonstration in `dfs_solver.py`. It is highly suboptimal, but can be used to test out the base difficulty/complexity of different initial states of the game. Check Appendix (later in the document) for a rundown of how it works.
+A basic solver that does depth-first search is given as a demonstration in `dfs_solver.py`. It is highly suboptimal, but can be used to test out the base difficulty/complexity of different initial states of the game. Check Appendix (later in the document) for a rundown of how it works and extend the base class `solver.py` to try out your own.
 
 Test it out : 
+
+IMPORTANT NOTE : It's best to keep your terminal in full-screen mode and zoom out using Ctrl - to visualize results best.
 
 ```
 uv run dfs_solver.py 1-easy
 
+# state_changes = [
+   ([0, 1, 1, 0, 1, 1, 0, 0], 0),  # Initial state
+]
+# bucket_idx = 3
+# desired_loss = 0 -->
+```
+
+Easy initial state, solves in 10 steps.
 ![1 easy](results/1-easy.png "1 state easy state")
 
 
-```
 ```
 uv run dfs_solver.py 1-medium 
 ```
 
 ![1 medium](results/1-medium.png "1 state medium state")
-
+Medium difficulty. solves in 21 steps. 
 ```
 uv run dfs_solver.py 1-hard 
 ```
+Hard to find patterns, takes 78 steps to solve. Stagnates a few times but eventually converges to a single pipe. Interesting because it zigzags aimlessly for a lot of steps finding all sorts of common groupings until the 'aha' moment strikes at step 72.
+![1 hard](results/1-hard.png "1 state hard state")
+
+
 ```
+uv run dfs_solver.py 1-unsolvable
+```
+An example of an initial state that is unsolvable with the current constraints. 
+
+Exercise to reader : try to see flipping which value in the array makes it solvable again
+![1 hard](results/1-unsolvable.png "1 state hard state")
 
 
 ```
 uv run dfs_solver.py 3-easy
+
+# state_changes = [
+#   ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+#   ([1, 1, 1, 0, 1, 1, 1, 0], 0.8),  # First change after 0.8 seconds
+#   ([1, 1, 1, 0, 1, 1, 1, 1], 2.5),  # Second change after 2.5 seconds
+# ]
+
+# bucket_idx = 3
+# desired_loss = 0
 ```
-![3 easy](results/1-medium.png "3 state easy state")
+
+This shows how the DFS solver adapts to changes in the initial state over a period of 3 seconds. Not how at each state transition, the rate of water loss goes up slightly and then comes down (the solver is adapting to 'uncertainty')
+
+![3 easy](results/3-easy.png "3 state easy state")
 
 
 
@@ -137,3 +166,5 @@ The solver handles changing initial states during search (dfs_solver.py:278-341)
 
 
 (P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
+
+
