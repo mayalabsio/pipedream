@@ -72,7 +72,15 @@ IMPORTANT NOTE : It's best to keep your terminal in full-screen mode and zoom ou
 
 ```
 uv run dfs_solver.py 1-easy
+
+# state_changes = [
+   ([0, 1, 1, 0, 1, 1, 0, 0], 0),  # Initial state
+]
+# bucket_idx = 3
+# desired_loss = 0 -->
 ```
+
+Easy initial state, solves in 10 steps.
 ![1 easy](results/1-easy.png "1 state easy state")
 
 
@@ -81,22 +89,38 @@ uv run dfs_solver.py 1-medium
 ```
 
 ![1 medium](results/1-medium.png "1 state medium state")
-
+Medium difficulty. solves in 21 steps. 
 ```
 uv run dfs_solver.py 1-hard 
 ```
+Hard to find patterns, takes 78 steps to solve. Stagnates a few times but eventually converges to a single pipe. Interesting because it zigzags aimlessly for a lot of steps finding all sorts of common groupings until the 'aha' moment strikes at step 72.
 ![1 hard](results/1-hard.png "1 state hard state")
 
 
 ```
 uv run dfs_solver.py 1-unsolvable
 ```
+An example of an initial state that is unsolvable with the current constraints. 
+
+Exercise to reader : try to see flipping which value in the array makes it solvable again
 ![1 hard](results/1-unsolvable.png "1 state hard state")
 
 
 ```
 uv run dfs_solver.py 3-easy
+
+# state_changes = [
+#   ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+#   ([1, 1, 1, 0, 1, 1, 1, 0], 0.8),  # First change after 0.8 seconds
+#   ([1, 1, 1, 0, 1, 1, 1, 1], 2.5),  # Second change after 2.5 seconds
+# ]
+
+# bucket_idx = 3
+# desired_loss = 0
 ```
+
+This shows how the DFS solver adapts to changes in the initial state over a period of 3 seconds. Not how at each state transition, the rate of water loss goes up slightly and then comes down (the solver is adapting to 'uncertainty')
+
 ![3 easy](results/3-easy.png "3 state easy state")
 
 
@@ -142,3 +166,5 @@ The solver handles changing initial states during search (dfs_solver.py:278-341)
 
 
 (P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
+
+

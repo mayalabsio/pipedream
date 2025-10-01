@@ -546,7 +546,7 @@ if __name__ == "__main__":
             (2 * [0, 1, 1, 0, 1, 1, 0], 0),  # Initial state
         ]
         hole_idx = 3
-        desired_loss = 2
+        desired_loss = 0
     elif test_case == "1-unsolvable":
         state_changes = [
             (
