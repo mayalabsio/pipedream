@@ -605,6 +605,6 @@ if __name__ == "__main__":
     from ascii_plot_solver_losses import plot_solver_losses_ascii
 
     plot_solver_losses_ascii(
-        solver, first_state=state_changes[0][0], width=150, height=35
+        solver, first_state=state_changes[0][0], width=250, height=35
     )
 

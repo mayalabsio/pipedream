@@ -157,13 +157,24 @@ def plot_solver_losses_ascii(solver, first_state=None, width=80, height=20):
     # Print X-axis
     print("     " + "-" * width)
     
-    # Print X-axis labels
-    x_labels = []
-    for i in range(0, width, max(1, width // 8)):
-        call_val = min_call + (max_call - min_call) * i / (width - 1)
-        x_labels.append(f"{int(call_val):>6}")
+    # Print X-axis labels evenly distributed across width
+    # Calculate how many labels we can fit (assuming ~4 chars per label)
+    label_width = 4
+    num_labels = min(10, width // label_width)  # Cap at 10 labels max
     
-    print("     " + "".join(x_labels))
+    x_axis_line = [' '] * width
+    for i in range(num_labels):
+        pos = int(i * (width - 1) / max(1, num_labels - 1))
+        call_val = min_call + (max_call - min_call) * pos / (width - 1)
+        label = f"{int(call_val)}"
+        
+        # Place label at position, ensuring it fits within width
+        start_pos = max(0, min(pos - len(label)//2, width - len(label)))
+        for j, char in enumerate(label):
+            if start_pos + j < width:
+                x_axis_line[start_pos + j] = char
+    
+    print("     " + "".join(x_axis_line))
     print(f"     {'Number of Solver Calls':^{width}}")
     
     # Print legend
