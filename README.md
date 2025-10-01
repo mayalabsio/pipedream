@@ -22,7 +22,6 @@ You can run a game with a random initial state and bucket position:
 uv run game.py 
 ```
 
-```
 
 or initialize the game state like this to play it:
 
@@ -72,15 +71,26 @@ Test it out :
 
 ```
 uv run dfs_solver.py 1-easy
+```
+![1 easy](results/1-easy.png "1 state easy state")
 
+```
 ```
 uv run dfs_solver.py 1-medium 
+```
 
-
-uv run dfs_solver.py 1-hard 
+![1 medium](results/1-medium.png "1 state medium state")
 
 ```
+uv run dfs_solver.py 1-hard 
+```
+```
+```
 uv run dfs_solver.py 3-easy
+```
+![3 easy](results/1-medium.png "3 state easy state")
+
+
 
 ```
 ```
