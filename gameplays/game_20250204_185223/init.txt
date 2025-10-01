@@ -1,0 +1,2 @@
+initial_state=[0, 1, 1, 1, 1, 0, 0, 1, 1]
+hole_idx=8
