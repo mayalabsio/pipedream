@@ -100,20 +100,46 @@ def plot_solver_losses_ascii(solver, first_state=None, width=80, height=20):
             plot_grid[y][x] = colored_char
             plot_points.append((x, y, state_idx))
     
-    # Second pass: add vertical connectors between consecutive points
+    # Second pass: connect consecutive points with lines
     for i in range(len(plot_points) - 1):
         x1, y1, state1 = plot_points[i]
         x2, y2, state2 = plot_points[i + 1]
         
         # Only connect points from the same state
-        if state1 == state2 and x2 == x1 + 1:  # Adjacent x positions
-            # Draw vertical line between y1 and y2 with same color as state
+        if state1 == state2:
             color = colors[state1 % len(colors)]
-            colored_connector = f"{color}|{reset_color}"
-            min_y, max_y = min(y1, y2), max(y1, y2)
-            for y in range(min_y + 1, max_y):
-                if 0 <= y < height and plot_grid[y][x1] == ' ':
-                    plot_grid[y][x1] = colored_connector
+            
+            # Draw line from (x1, y1) to (x2, y2)
+            # Handle both horizontal and vertical segments
+            
+            if x1 == x2:
+                # Vertical line only
+                min_y, max_y = min(y1, y2), max(y1, y2)
+                for y in range(min_y + 1, max_y):
+                    if 0 <= y < height and plot_grid[y][x1] == ' ':
+                        plot_grid[y][x1] = f"{color}|{reset_color}"
+            else:
+                # Draw horizontal and vertical segments to connect points
+                # Use a simple line drawing algorithm
+                
+                dx = x2 - x1
+                dy = y2 - y1
+                steps = max(abs(dx), abs(dy))
+                
+                if steps > 0:
+                    x_inc = dx / steps
+                    y_inc = dy / steps
+                    
+                    for step in range(1, steps):
+                        x = int(x1 + step * x_inc)
+                        y = int(y1 + step * y_inc)
+                        
+                        if 0 <= x < width and 0 <= y < height and plot_grid[y][x] == ' ':
+                            # Use vertical bar for mostly vertical segments, underscore for horizontal
+                            if abs(y_inc) > abs(x_inc):
+                                plot_grid[y][x] = f"{color}|{reset_color}"
+                            else:
+                                plot_grid[y][x] = f"{color}_{reset_color}"
     
     # Mark state changes with vertical lines
     for call_num in state_changes:
