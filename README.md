@@ -2,7 +2,6 @@
 
 Pipedream is an extremely hackable text-based compression game where the core goal is write an automated solver script that can solve arbitrary levels of the game in the fewest number of steps.
 
-interactive game where you compress sequences by grouping and clamping elements.
 
 ## Game Rules : 
 
@@ -50,16 +49,31 @@ The goal of the game is to bring down the 'rate of loss' to 0 - by basically con
 ```
 ```
 
-You can initialize the game state like this (make sure you have uv installed) :
+## Usage 
+
+You can initialize the game state like this to play it:
 
 ```bash
 ```
 uv run game.py --state "1,1,1,0,0,1,1,0,1" --bucket 3
+
+Basic controls : 
+
+1. The game state consists of a sequence of 1s and 0s, with one position designated as a "bucket"
+2. You can perform these actions:
+   - Group consecutive identical elements
+   - Clamp groups (once you've seen the same group pattern twice)
+   - Move clamps into adjacent holes
+3. The goal is to minimize the number of non-zero elements (excluding the hole position) i.e. build up the one single higher-order pipe 
 ```
 ```
 
+Playing manually gets slow quickly, so the ideal way to play is to write a solver for the game. 
 
 ## Usage
+
+(P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
+
 
 The game can be run in several modes:
 
