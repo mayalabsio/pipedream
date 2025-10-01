@@ -167,4 +167,8 @@ The solver handles changing initial states during search (dfs_solver.py:278-341)
 
 (P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
 
+### LICENSE
+
+MIT
+
 
