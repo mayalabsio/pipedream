@@ -154,12 +154,12 @@ class CompressionGame:
     def get_global_initial_state(cls):
         return cls._global_initial_state.copy() if cls._global_initial_state is not None else None
     
-    def __init__(self, initial_state: List[int], hole_idx: Optional[int] = None):
+    def __init__(self, initial_state: List[int], bucket_idx: Optional[int] = None):
         if CompressionGame._global_initial_state is None:
             CompressionGame.set_global_initial_state(initial_state)
         self.initial_state = initial_state.copy()
         self.state = initial_state.copy()
-        self.hole_idx = hole_idx
+        self.bucket_idx = bucket_idx
         self.unlocked_clamps: Set[tuple] = set()  # Tracks available clamp patterns
         self.groups_seen: dict = {}  # Tracks {contents: count} of groups seen
         self.total_loss = 0  # Track cumulative loss
@@ -170,8 +170,8 @@ class CompressionGame:
         return self.state.copy()
     
     def get_loss(self) -> int:
-        """Calculate current loss (number of non-zero elements, excluding hole position)"""
-        return sum(1 for i, x in enumerate(self.state) if x != 0 and i != self.hole_idx)
+        """Calculate current loss (number of non-zero elements, excluding bucket position)"""
+        return sum(1 for i, x in enumerate(self.state) if x != 0 and i != self.bucket_idx)
     
     def _update_clamp_availability(self):
         """Update which clamp patterns are available based on groups seen"""
@@ -302,7 +302,7 @@ class CompressionGame:
         # Save initial state and configuration
         with open(os.path.join(game_dir, 'init.txt'), 'w') as f:
             f.write(f"initial_state={self.layers[0][0]}\n")
-            f.write(f"hole_idx={self.hole_idx}\n")
+            f.write(f"bucket_idx={self.bucket_idx}\n")
         
         # Save moves
         with open(os.path.join(game_dir, 'moves.txt'), 'w') as f:
@@ -321,7 +321,7 @@ class CompressionGame:
                     f.write(f"{move.direction}\n")
         print(f"Game information saved to {game_dir}")
 
-def print_state(state: List[Union[int, Group, Clamp]], loss: int, layer_num: int = None, hole_idx: Optional[int] = None):
+def print_state(state: List[Union[int, Group, Clamp]], loss: int, layer_num: int = None, bucket_idx: Optional[int] = None):
     """Pretty print the state in an ASCII grid with variable width cells"""
     state_str = [str(x) for x in state]
     if not state_str:
@@ -338,9 +338,9 @@ def print_state(state: List[Union[int, Group, Clamp]], loss: int, layer_num: int
     middle_row = "|" + "|".join([f" {s:^{w}} " for s, w in zip(state_str, widths)]) + "|"
     index_row = "|" + "|".join([f" {i:^{w}} " for i, w in enumerate(widths)]) + "|"
     
-    # Create hole indicator row if hole_idx is provided
-    if hole_idx is not None:
-        hole_row = "|" + "|".join([f" {'H' if i == hole_idx else ' ':^{w}} " for i, w in enumerate(widths)]) + "|"
+    # Create bucket indicator row if bucket_idx is provided
+    if bucket_idx is not None:
+        bucket_row = "|" + "|".join([f" {'B' if i == bucket_idx else ' ':^{w}} " for i, w in enumerate(widths)]) + "|"
     
     # Print the grid
     print(horizontal_border)
@@ -348,15 +348,15 @@ def print_state(state: List[Union[int, Group, Clamp]], loss: int, layer_num: int
     print(horizontal_border)
     print(middle_row)
     print(horizontal_border)
-    if hole_idx is not None:
-        print(hole_row)
+    if bucket_idx is not None:
+        print(bucket_row)
         print(horizontal_border)
     if layer_num is not None:
         print(f"Layer {layer_num} | loss={loss}m/s")
     else:
         print(f"loss={loss}m/s")
 
-def print_all_layers(layers: List[Tuple[List[Union[int, Group, Clamp]], int]], hole_idx: Optional[int] = None):
+def print_all_layers(layers: List[Tuple[List[Union[int, Group, Clamp]], int]], bucket_idx: Optional[int] = None):
     """Pretty print all layers of the game state in an ASCII grid"""
     # Use uniform width for all cells based on the widest content across all layers
     cell_width = max(
@@ -378,10 +378,10 @@ def print_all_layers(layers: List[Tuple[List[Union[int, Group, Clamp]], int]], h
         print(row)
         print(header)
     
-    # Add hole indicator row if hole_idx provided
-    if hole_idx is not None:
-        hole_row = "|" + "|".join([f" {'H' if i == hole_idx else ' ':^{w}} " for i, w in enumerate(max_widths)]) + "| Hole"
-        print(hole_row)
+    # Add bucket indicator row if bucket_idx provided
+    if bucket_idx is not None:
+        bucket_row = "|" + "|".join([f" {'B' if i == bucket_idx else ' ':^{w}} " for i, w in enumerate(max_widths)]) + "| Bucket"
+        print(bucket_row)
         print(header)
 
 def replay_game(replay_dir: str):
@@ -391,14 +391,14 @@ def replay_game(replay_dir: str):
         for line in f:
             if line.startswith('initial_state='):
                 initial_state = ast.literal_eval(line.split('=')[1].strip())
-            elif line.startswith('hole_idx='):
-                hole_idx = ast.literal_eval(line.split('=')[1].strip())
+            elif line.startswith('bucket_idx='):
+                bucket_idx = ast.literal_eval(line.split('=')[1].strip())
 
     print(f"Replaying game from {replay_dir}")
     print(f"Initial state: {initial_state}")
-    print(f"Hole position: {hole_idx}")
+    print(f"Bucket position: {bucket_idx}")
     
-    game = CompressionGame(initial_state, hole_idx)
+    game = CompressionGame(initial_state, bucket_idx)
     state = game.reset()
     
     # Read and replay moves
@@ -427,19 +427,19 @@ def replay_game(replay_dir: str):
         print(f"\n=== Move {i+1} ===")
         print(f"Executing: {move}")
         state, reward, done, info = game.step(move)
-        print_state(state, info['loss'], hole_idx=hole_idx)
+        print_state(state, info['loss'], bucket_idx=bucket_idx)
         input("Press Enter for next move...")
     
     print("\nReplay complete! Final state:")
-    print_state(state, game.get_loss(), hole_idx=hole_idx)
+    print_state(state, game.get_loss(), bucket_idx=bucket_idx)
     print("\nFinal layer hierarchy:")
-    print_all_layers(game.layers, hole_idx)
+    print_all_layers(game.layers, bucket_idx)
 
-def play_interactive(init_state: List[int]=[1, 1, 1, 0, 0, 1, 1, 0, 1], hole_idx: Optional[int] = None):
+def play_interactive(init_state: List[int]=[1, 1, 1, 0, 0, 1, 1, 0, 1], bucket_idx: Optional[int] = None):
     print("Welcome to the Compression Game!")
-    if hole_idx is not None:
-        print(f"Hole is at position {hole_idx}")
-    game = CompressionGame(init_state, hole_idx)
+    if bucket_idx is not None:
+        print(f"Bucket is at position {bucket_idx}")
+    game = CompressionGame(init_state, bucket_idx)
     state = game.reset()
     done = False
     steps = 0
@@ -447,7 +447,7 @@ def play_interactive(init_state: List[int]=[1, 1, 1, 0, 0, 1, 1, 0, 1], hole_idx
     while not done:
         print(f"================== Step {steps} ==================")
         print(f"Unlocked clamps: {unlocked_clamps}")
-        print_state(state, game.get_loss(), hole_idx=hole_idx)
+        print_state(state, game.get_loss(), bucket_idx=bucket_idx)
         print("You can perform these actions:")
         print("0: Group elements - e.g. GroupAction(position=0, size=2)")
         print("1: Clamp group - e.g. ClampAction(position=0, size=2)")
@@ -489,7 +489,7 @@ def play_interactive(init_state: List[int]=[1, 1, 1, 0, 0, 1, 1, 0, 1], hole_idx
             continue
         elif action_index == '3':
             print("\n=== Showing all layers ===")
-            print_all_layers(game.layers, hole_idx)
+            print_all_layers(game.layers, bucket_idx)
             continue
         else:
             print("Invalid choice!")
@@ -507,7 +507,7 @@ def play_interactive(init_state: List[int]=[1, 1, 1, 0, 0, 1, 1, 0, 1], hole_idx
     print_state(state, info['loss'])
     print(f"\nFinal total loss: {game.total_loss}")
     print("\nFinal layer hierarchy:")
-    print_all_layers(game.layers, hole_idx)
+    print_all_layers(game.layers, bucket_idx)
     # Create timestamped game directory
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     game_dir = os.path.join("gameplays", f"game_{timestamp}")
@@ -531,7 +531,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Compression Game')
     parser.add_argument('--replay', type=str, help='Replay directory path')
     parser.add_argument('--state', type=str, help='Initial state as comma-separated values (e.g. "1,1,1,0,0,1,1,0,1")')
-    parser.add_argument('--hole', type=int, help='Hole position index')
+    parser.add_argument('--bucket', type=int, help='Bucket position index')
     
     args = parser.parse_args()
 
@@ -541,15 +541,15 @@ if __name__ == "__main__":
         if args.state:
             # Parse state string into list of integers
             initial_state = [int(x) for x in args.state.split(',')]
-            hole_idx = args.hole
+            bucket_idx = args.bucket
         else:
             # Generate random state if none provided
             length = 9
             num_zeros = 3
             initial_state = generate_random_state(length, num_zeros)
-            hole_idx = random.randint(0, length-1) if args.hole is None else args.hole
+            bucket_idx = random.randint(0, length-1) if args.bucket is None else args.bucket
 
         print(f"Initial state: {initial_state}")
-        print(f"Hole position: {hole_idx}")
+        print(f"Bucket position: {bucket_idx}")
 
-        play_interactive(initial_state, hole_idx)
+        play_interactive(initial_state, bucket_idx)
