@@ -529,56 +529,62 @@ if __name__ == "__main__":
         test_case = sys.argv[1]
     else:
         print("No test_case provided")
+    try:
+        if test_case == "1-easy":
+            state_changes = [
+                ([0, 1, 1, 0, 1, 1, 0, 0], 0),  # Initial state
+            ]
+            hole_idx = 3
+            desired_loss = 0
+        elif test_case == "1-medium":
+            state_changes = [
+                ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+            ]
+            hole_idx = 3
+            desired_loss = 0
+        elif test_case == "1-hard":
+            state_changes = [
+                (2 * [0, 1, 1, 0, 1, 1, 0], 0),  # Initial state
+            ]
+            hole_idx = 3
+            desired_loss = 0
+        elif test_case == "1-unsolvable":
+            state_changes = [
+                (
+                    [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1],
+                    0,
+                ),  # Initial state. Note changingjust one digit here will make this state easy. which one will it be?
+            ]
+            hole_idx = 3
+            desired_loss = 2  # this will not solve within 500 state calls and is an example of a state with likely no desired_loss=0 solution.
+        elif test_case == "3-easy":
+            state_changes = [
+                ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+                ([1, 1, 1, 0, 1, 1, 1, 0], 0.8),  # First change after 0.8 seconds
+                ([1, 1, 1, 0, 1, 1, 1, 1], 2.5),  # Second change after 2.5 seconds
+            ]
 
-    if test_case == "1-easy":
-        state_changes = [
-            ([0, 1, 1, 0, 1, 1, 0, 0], 0),  # Initial state
-        ]
-        hole_idx = 3
-        desired_loss = 0
-    elif test_case == "1-medium":
-        state_changes = [
-            ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
-        ]
-        hole_idx = 3
-    elif test_case == "1-hard":
-        state_changes = [
-            (2 * [0, 1, 1, 0, 1, 1, 0], 0),  # Initial state
-        ]
-        hole_idx = 3
-        desired_loss = 2
-    elif test_case == "1-unsolvable":
-        state_changes = [
-            (
-                [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1],
-                0,
-            ),  # Initial state. Note changingjust one digit here will make this state easy. which one will it be?
-        ]
-        hole_idx = 3
-        desired_loss = 2  # this will not solve within 500 state calls and is an example of a state with likely no desired_loss=0 solution.
-    elif test_case == "3-easy":
-        state_changes = [
-            ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
-            ([1, 1, 1, 0, 1, 1, 1, 0], 0.8),  # First change after 0.8 seconds
-            ([1, 1, 1, 0, 1, 1, 1, 1], 2.5),  # Second change after 2.5 seconds
-        ]
+            hole_idx = 3
+            desired_loss = 0
+        else:
+            print(
+                f"could not find test case of name {test_case}. Run `cat dfs_solver.py` to see available test cases or add your own."
+            )
+            raise ValueError(
+                f"could not find test case of name {test_case}. Run `cat dfs_solver.py` to see available test cases or add your own."
+            )
 
-        hole_idx = 3
-        desired_loss = 0
-    else:
-        print(
-            f"could not find test case of name {test_case}. Run `cat dfs_solver.py` to see available test cases or add your own."
+        solver, solution = run_solver(
+            initial_states_and_times=state_changes,
+            hole_idx=hole_idx,
+            max_calls=500,
+            desired_loss=desired_loss,
         )
+        # plot_solver_losses(solver, first_state=state_changes[0][0])
+        from plotter import plot_solver_losses_ascii
 
-    solver, solution = run_solver(
-        initial_states_and_times=state_changes,
-        hole_idx=hole_idx,
-        max_calls=500,
-        desired_loss=desired_loss,
-    )
-    # plot_solver_losses(solver, first_state=state_changes[0][0])
-    from plotter import plot_solver_losses_ascii
-
-    plot_solver_losses_ascii(
-        solver, first_state=state_changes[0][0], width=250, height=35
-    )
+        plot_solver_losses_ascii(
+            solver, first_state=state_changes[0][0], width=250, height=35
+        )
+    except Exception as e:
+        raise Exception(str(e))
