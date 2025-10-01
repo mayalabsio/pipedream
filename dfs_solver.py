@@ -17,6 +17,8 @@ from copy import deepcopy
 from game import print_all_layers, print_state
 import time
 import threading
+import argparse
+import sys
 
 MAX_DEPTH = 10
 
@@ -462,10 +464,11 @@ def change_initial_state(delay: float, new_state: List[int]):
     return _change
 
 
-def run_solver_with_state_changes(
+def run_solver(
     initial_states_and_times: List[Tuple[List[int], float]],
     hole_idx: int,
     max_calls: int = 500,
+    desired_loss=0,
 ):
     """
     Run solver with scheduled state changes.
@@ -499,7 +502,13 @@ def run_solver_with_state_changes(
 
     # Start solving
     solution = solver.solve_dfs(
-        game, 0, 0, max_depth=20, lookahead=3, visited_states=set(), desired_loss=0
+        game,
+        0,
+        0,
+        max_depth=20,
+        lookahead=3,
+        visited_states=set(),
+        desired_loss=desired_loss,
     )
 
     print("\n=== Final Results ===")
@@ -516,15 +525,47 @@ def run_solver_with_state_changes(
 
 if __name__ == "__main__":
     # Example usage with state changes
-    state_changes = [
-        ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
-        ([1, 1, 1, 0, 1, 1, 1, 0], 0.8),  # First change
-        ([1, 1, 1, 0, 1, 1, 1, 1], 2.5),  # Second change
-    ]
+    if len(sys.argv) > 1:
+        test_case = sys.argv[1]
+    else:
+        print("No test_case provided")
 
-    hole_idx = 3
-    solver, solution = run_solver_with_state_changes(
-        initial_states_and_times=state_changes, hole_idx=hole_idx, max_calls=500
+    if test_case == "1-easy":
+        state_changes = [
+            ([0, 1, 1, 0, 1, 1, 0, 0], 0),  # Initial state
+        ]
+        hole_idx = 3
+        desired_loss = 0
+    elif test_case == "1-medium":
+        state_changes = [
+            ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+        ]
+        hole_idx = 3
+    elif test_case == "1-hard":
+        state_changes = [
+            ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+        ]
+        hole_idx = 3
+        desired_loss = 0
+    elif test_case == "3-easy":
+        state_changes = [
+            ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+            ([1, 1, 1, 0, 1, 1, 1, 0], 0.8),  # First change after 0.8 seconds
+            ([1, 1, 1, 0, 1, 1, 1, 1], 2.5),  # Second change after 2.5 seconds
+        ]
+
+        hole_idx = 3
+        desired_loss = 0
+    else:
+        print(
+            f"could not find test case of name {test_case}. Run `cat dfs_solver.py` to see available test cases or add your own."
+        )
+
+    solver, solution = run_solver(
+        initial_states_and_times=state_changes,
+        hole_idx=hole_idx,
+        max_calls=500,
+        desired_loss=0,
     )
     # plot_solver_losses(solver, first_state=state_changes[0][0])
     from plotter import plot_solver_losses_ascii
