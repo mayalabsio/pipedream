@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Kar"
+    given-names: "Sibesh"
+title: "Pipedream : Compression Game"
+version: 0.1.0
+date-released: 2025-10-01
+abstract: "Pipedream is an extremely hackable text-based compression game where the core goal is to write an automated solver script that can solve arbitrary levels of the game in the fewest number of steps."
+repository-code: "https://github.com/mayalabsio/pipedream"
+license: MIT

@@ -64,7 +64,7 @@ uv run game.py --replay gameplays/game_20250204_184018
 
 Playing manually gets slow and tedious quickly, so the ideal way to play is to write a solver for the game. 
 
-A basic solver that does depth-first search is given as a demonstration in `dfs_solver.py`. It is highly suboptimal, but can be used to test out the base difficulty/complexity of different initial states of the game. Check Appendix (later in the document) for a rundown of how it works.
+A basic solver that does depth-first search is given as a demonstration in `dfs_solver.py`. It is highly suboptimal, but can be used to test out the base difficulty/complexity of different initial states of the game. Check Appendix (later in the document) for a rundown of how it works and extend the base class `solver.py` to try out your own.
 
 Test it out : 
 
