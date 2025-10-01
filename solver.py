@@ -13,7 +13,7 @@ class GameState:
     groups_seen: Dict[tuple, int]  # Track group frequencies
     total_loss: int  # Cumulative loss
     moves: List[Union[GroupAction, ClampAction, MoveAction]]  # History of moves
-    hole_idx: int  # Position of the hole
+    bucket_idx: int  # Position of the bucket
     
     def __hash__(self):
         # Convert state to tuple of strings
