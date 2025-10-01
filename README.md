@@ -50,7 +50,7 @@ The goal of the game is to bring down the 'rate of loss' to 0 - by basically con
 ```
 ```
 
-You can initialize the game state like this :
+You can initialize the game state like this (make sure you have uv installed) :
 
 ```bash
 ```
@@ -58,13 +58,8 @@ uv run game.py --state "1,1,1,0,0,1,1,0,1" --bucket 3
 ```
 ```
 
-But the way to this is to create a (inverted) pyramid of pipes from the roof to the bucket on the floor.  
 
 ## Usage
-
-Install dependencies:
-
-uv sync
 
 The game can be run in several modes:
 
