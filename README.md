@@ -93,7 +93,66 @@ uv run game.py --replay gameplays/game_20250204_184018
 
 
 Playing manually gets slow and tedious quickly, so the ideal way to play is to write a solver for the game. 
+A basic solver that does depth-first search is given as a demonstration in `dfs_solver.py`. It is highly suboptimal, but can be used to test out the base difficulty/complexity of different initial states of the game. Check Appendix (later in the document) for a rundown of how it works.
 
-## Usage
+Test it out : 
+
+```
+uv run dfs_solver.py 1-easy
+
+```
+uv run dfs_solver.py 1-medium 
+
+
+uv run dfs_solver.py 1-hard 
+
+```
+uv run dfs_solver.py 3-easy
+
+```
+```
+```
+
+
+
+### Appendix 
+
+How the DFS solver demonstration in `dfs_solver.py` works : 
+
+The DFS solver (DFSSolver class) uses recursive depth-first search to find solutions by trying different action sequences:
+
+1. Action Types: It considers three types of actions in order:
+ • Group actions : Find repeating patterns (2-4 elements) and group them
+ • Clamp actions : Clamp groups that match unlocked patterns
+ • Move actions : Move clamps into adjacent holes
+2. Search Strategy: For each game state, it:
+ • Finds all possible actions of each type
+ • Groups compatible actions that don't conflict
+ • Recursively tries each action combination
+ • Returns the first solution found
+
+
+## Key Functions
+
+• find_possible_groups() : Identifies repeating patterns that can be grouped
+• find_possible_clamps() : Finds groups that can be clamped based on unlocked patterns
+• find_possible_moves() : Identifies clamps that can move into adjacent holes
+
+## State Management
+
+The solver tracks:
+
+• Visited states : Prevents revisiting the same game state
+• Call limits : Stops after max_calls to prevent infinite search
+• Loss tracking : Records game losses for analysis
+
+## Dynamic State Changes
+
+The solver handles changing initial states during search (dfs_solver.py:278-341):
+
+• Detects when the global game state changes
+• Can preserve valid moves or restart fresh
+• Continues search from the new state
+
 
 (P.S. this project has no dependencies and intends to remain as barebones as possible. You can include an optional `matplotlib` if you want an alternative to the default ASCII plotter)
