@@ -119,7 +119,7 @@ uv run dfs_solver.py 3-easy
 
 How the DFS solver demonstration in `dfs_solver.py` works : 
 
-The DFS solver (DFSSolver class) uses recursive depth-first search to find solutions by trying different action sequences:
+It uses recursive depth-first search to find solutions by trying different action sequences:
 
 1. Action Types: It considers three types of actions in order:
  • Group actions : Find repeating patterns (2-4 elements) and group them
