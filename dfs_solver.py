@@ -302,10 +302,10 @@ class DFSSolver(GameSolver):
             print("Visited states:", self.visited_states)
             print("Current game state:", game.state)
             print("Current layers:")
-            print_all_layers(game.layers[1:], game.hole_idx)
+            print_all_layers(game.layers[1:], game.bucket_idx)
 
             # Create new game with changed initial state
-            new_game = CompressionGame(current_global_state, game.hole_idx)
+            new_game = CompressionGame(current_global_state, game.bucket_idx)
 
             if self.preserve_moves_on_change:
                 # Try to replay the moves that worked before
@@ -579,7 +579,7 @@ if __name__ == "__main__":
             hole_idx=hole_idx,
             max_calls=500,
             desired_loss=desired_loss,
-
+        )
         # plot_solver_losses(solver, first_state=state_changes[0][0])
         from plotter import plot_solver_losses_ascii
 
