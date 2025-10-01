@@ -543,10 +543,19 @@ if __name__ == "__main__":
         hole_idx = 3
     elif test_case == "1-hard":
         state_changes = [
-            ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
+            (2 * [0, 1, 1, 0, 1, 1, 0], 0),  # Initial state
         ]
         hole_idx = 3
-        desired_loss = 0
+        desired_loss = 2
+    elif test_case == "1-unsolvable":
+        state_changes = [
+            (
+                [0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1],
+                0,
+            ),  # Initial state. Note changingjust one digit here will make this state easy. which one will it be?
+        ]
+        hole_idx = 3
+        desired_loss = 2  # this will not solve within 500 state calls and is an example of a state with likely no desired_loss=0 solution.
     elif test_case == "3-easy":
         state_changes = [
             ([1, 1, 1, 0, 1, 1, 0, 1], 0),  # Initial state
@@ -565,7 +574,7 @@ if __name__ == "__main__":
         initial_states_and_times=state_changes,
         hole_idx=hole_idx,
         max_calls=500,
-        desired_loss=0,
+        desired_loss=desired_loss,
     )
     # plot_solver_losses(solver, first_state=state_changes[0][0])
     from plotter import plot_solver_losses_ascii
